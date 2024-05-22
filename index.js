@@ -1,66 +1,110 @@
 const addButton = document.querySelector("#addButton")
 const inputBox = document.querySelector("#inputBox")
-const list = document.querySelector("#toDoList")
+const ulList = document.querySelector("#toDoList")
 
-let toDoList = []
+let toDoList = [];
+
+let counter = 0;
 
 const renderToDo = () => {
-
-    console.log(toDoList)
-    let listElement='';
-    toDoList.forEach(task => {
-    listElement += `<li>
-      <input type="checkbox" class="liEl" id=${task.id} ${task.completed ? 'checked' : ''}>
-      <span class="span" id=${task.id}>${task.name}<span>
-      <button class="deleteButton" id=${task.id}>X</button>
+  let tasks='';
+  toDoList.forEach(task => {
+    tasks += `<li>
+    <input type="checkbox" class="liElement" id=${task.id} ${task.completed ? 'checked' : ''}>
+    <span class="span" id=${task.id}>${task.name}</span>
+    <input type="text" value=${task.name} class=input id=input-${task.id} hidden>
+    <button class="deleteButton" id=${task.id}>X</button>
     </li>`;
-    })
-    list.innerHTML = listElement;
+  })
+  ulList.innerHTML = tasks;
 };
 
 const taskCompleted = (id) => {
-    toDoList.forEach(function (task) {
-        if (task.id == id) {
-            task.completed = !task.completed
-        }
-    })
+  toDoList.forEach(function (task) {
+    if (task.id == id) {
+      task.completed = !task.completed
+    }
+  })
+  renderToDo();
 }
 
 const taskDelete = (id) => {
-    toDoList = toDoList.filter((task) => task.id != id);
-    renderToDo();
+  toDoList = toDoList.filter((task) => task.id != id);
+  renderToDo();
 }
 
-const update = (event) => {
-    if(event.target.className == 'span')
-        {
-          console.log("Изменение")
-        }
+const update = (event, id) => {
+ document.getElementById("input-"+id).hidden = false;
+ document.getElementById("input-"+id).focus();
+ event.target.setAttribute("hidden", true);
 }
 
-const buttonSelect = (event) => {
-    if(event.target.className == 'liEl')
-      {
-        taskCompleted(event.target.id)
-      }
-    if(event.target.className == 'deleteButton')
-      {
-        taskDelete(event.target.id)
-      }
+const escapePress = (event) => {
+  event.target.setAttribute("hidden", false);
+  renderToDo()
+}
+
+const enterPress = (event, id) => {
+  console.log(id)
+  console.log(task.id)
+  toDoList.forEach(function (task) {
+    if (task.id == id) {
+      task.name = event.target.value;
+      console.log("123")
+    }
+  })
+  renderToDo();
+}
+
+
+
+const selectButton = (event) => {
+  if(event.target.className == 'liElement')
+    {
+      taskCompleted(event.target.id);
+    }
+  if(event.target.className == 'deleteButton')
+    {
+      taskDelete(event.target.id);
+    }
+  if(event.target.className == 'span' && event.type == "dblclick")
+    {
+      update(event, event.target.id)
+    }
+  if(event.key === "Escape")
+    {
+      escapePress(event)
+    }
+  if(event.key === "Enter")
+    {
+      enterPress(event, event.target.id)
+    }
+  /*
+  if((event.target.className == 'span' && target == event.target))
+    {
+      counter++;
+      update(event, event.target.id)
+    }
+  else {
+    counter = 0; 
+    console.log(counter)
+    target = event.target
+  }  
+  */
 }
 
 const addToDo = () => {
-    const task = {
-      id: Date.now(),
-      name: inputBox.value,
-      completed: false 
-    }
-    toDoList.push(task);
-    inputBox.value=""
-
-    renderToDo();
+  const task = {
+    id: Date.now(),
+    name: inputBox.value,
+    completed: false 
+  }
+  toDoList.push(task);
+  inputBox.value=""
+  renderToDo();
 };
 
-list.addEventListener("dblclick", update)
-list.addEventListener("click", buttonSelect)
+ulList.addEventListener("keydown", selectButton)
+ulList.addEventListener("dblclick", selectButton)
+ulList.addEventListener("click", selectButton)
 addButton.addEventListener("click", addToDo)
