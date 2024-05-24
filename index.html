@@ -7,17 +7,30 @@
   <title>ToDo</title>
 </head>
 <body>
-  <h1>ToDo List</h1>
-  <input id="inputBox" class="inputBox">
-  <input type="checkbox" id="all" class="all"> Check all
-  <button id="addButton">Add ToDo</button>
-  <ul id="toDoList"></ul>
-  <button id="deleteAll" class="deleteAll">Delete All Complited</button>
-  <div id="divButton" class="divButton">
-    <button id="button1" class="divButton">All</butoon>
-    <button id="button2" class="divButton">Active</butoon>
-    <button id="button3" class="divButton">Completed</butoon>
-    <script src="/index.js"></script>
+  <div>
+  <h1>ToDo</h1>
+
+  <div class="addBlock">
+    <input id="inputBox" class="inputBox"> 
+    <button id="addButton" class="addButton">Add ToDo</button>
   </div>
+
+  <div class="check">
+    <input type="checkbox" id="allCheckBox" class="allCheckBox">Check all
+  </div>
+
+  <ul id="toDoList"></ul>
+ 
+  <div id="divButton" class="divButton">
+    <button id="buttonAll" class="divButton">All</butoon>
+    <button id="buttonActive" class="divButton">Active</butoon>
+    <button id="buttonComplited" class="divButton">Completed</butoon>    
+  </div>
+
+  <div class="delete">
+    <button id="deleteAll" class="deleteAll">Delete All Complited</button>
+  </div>
+  <script src="/index.js"></script>
+</div>
 </body>
 </html>
