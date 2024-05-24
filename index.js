@@ -2,7 +2,8 @@ const addButton = document.querySelector("#addButton")
 const inputBox = document.querySelector("#inputBox")
 const ulList = document.querySelector("#toDoList")
 const allCheckBox = document.querySelector("#all")
-const allDelete = document.querySelector("#deleteAllC")
+const allDelete = document.querySelector("#deleteAll")
+const divButton = document.querySelector("#divButton")
 
 button1 = document.querySelector("#button1")
 button2 = document.querySelector("#button2")
@@ -21,18 +22,34 @@ const renderToDo = () => {
     <button class="deleteButton" id=${task.id}>X</button>
     </li>`;
   })
+  ulList.innerHTML = tasks;
+  otherTask();
+  changeButtonText();
+};
 
+const changeButtonText = () => {
   button1.textContent = `All (${toDoList.length})`;
 
   button2text = toDoList.filter((task) => task.completed == false);
   button2.textContent = `Active (${button2text.length})`
 
   button3.textContent = `Completed(${toDoList.length - button2text.length})`
+} 
 
+const tabulation = (event) => {
+  if(event.target.id == 'button1')
+  {
 
-  ulList.innerHTML = tasks;
-  otherTask();
-};
+  }
+  if(event.target.id == 'button1')
+  {
+
+  }
+  if(event.target.id == 'button1')
+  {
+
+  }
+}
 
 const taskCompleted = (id) => {
   toDoList.forEach(task => {
@@ -55,6 +72,9 @@ const otherTask = () => {
     {
       allCheckBox.checked = true;
     }
+  if(toDoList.length == 0){
+    allCheckBox.checked = false;
+  }
 }
 
 const deleteAllComplited = () => {
@@ -94,6 +114,8 @@ const escapePress = (event, id) => {
   renderToDo();
 }
 
+
+
 const enterPress = (event, id) => {
   toDoList.forEach(task => {
     if (task.id == id) {
@@ -105,6 +127,7 @@ const enterPress = (event, id) => {
 }
 
 const selectButton = (event) => {
+ // console.log(event.detail)
   if(event.target.className == 'liElement')
     {
       taskCompleted(event.target.id);
@@ -117,24 +140,18 @@ const selectButton = (event) => {
     {
       allTaskCompleted(event);
     }
-  if(event.target.className == 'deleteAllC')
+  if(event.target.className == 'deleteAll')
     {
       deleteAllComplited();
     }
-
-  //doubleclick = click + click
-  /* 
-  if((event.target.className == 'span' && target == event.target))
+  if(event.target.className  == 'divButton')
     {
-      counter++;
-      update(event, event.target.id)
+      tabulation(event);
     }
-  else {
-    counter = 0; 
-    console.log(counter)
-    target = event.target
-  }  
-  */
+  if(event.target.className == 'span' && event.detail == 2)
+    {
+      update(event);
+    }
 }
 
 const keydownEvent = (event) => {
@@ -142,9 +159,13 @@ const keydownEvent = (event) => {
     {
       escapePress(event, event.target.id);
     }
-  if(event.key === "Enter")
+  if(event.key === "Enter" && event.target.className == 'input')
     {
       enterPress(event, event.target.id);
+    }
+  if(event.key === "Enter" && event.target.className == 'inputBox')
+    {
+      addToDo();
     }
 }
 
@@ -169,18 +190,19 @@ const addToDo = () => {
     completed: false 
   }
   toDoList.push(task);
-  inputBox.value=""
+  inputBox.value="";
   renderToDo();
+
+  addButton.blur();
+  inputBox.blur();
 };
 
-//добавление по Enter
-//пустые поля и .trim()
-//tab  + enter + checkbox = on
-
+inputBox.addEventListener("keydown", keydownEvent)
+divButton.addEventListener("click", selectButton)
 allDelete.addEventListener("click", selectButton)
 allCheckBox.addEventListener("click", selectButton)
 ulList.addEventListener("blur", blurEvent, true)
 ulList.addEventListener("keydown", keydownEvent)
-ulList.addEventListener("dblclick", doublePress)
+//ulList.addEventListener("dblclick", doublePress)
 ulList.addEventListener("click", selectButton)
 addButton.addEventListener("click", addToDo)
