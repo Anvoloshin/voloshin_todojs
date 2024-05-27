@@ -11,31 +11,62 @@ const buttonComplited = document.querySelector("#buttonComplited");
 
 let toDoList = [];
 
+let filterType = "buttonAll";
+
 const renderToDo = () => {
   let tasks='';
-  toDoList.forEach(task => {
-    tasks += `<li>
+  tabulationList(toDoList).forEach(task => {
+    tasks += `<li class="li">
     <input type="checkbox" class="liElement" id=${task.id} ${task.completed ? 'checked' : ''}>
     <span class="span" id=${task.id}>${task.name}</span>
-    <input value=${task.name} class="input" id=${task.id} hidden>
+    <input value="${task.name}" class="input" id=${task.id} hidden>
     <button class="deleteButton" id=${task.id}>X</button>
     </li>`;
   })
   ulList.innerHTML = tasks;
-  otherTask();
+  otherTask(tabulationList(toDoList));
   changeButtonText();
 };
 
 const changeButtonText = () => {
   buttonAll.textContent = `All (${toDoList.length})`;
-  activeLenght = toDoList.filter((task) => task.completed == false);
+  let activeLenght = toDoList.filter((task) => task.completed == false);
   buttonActive.textContent = `Active (${activeLenght.length})`
   buttonComplited.textContent = `Completed(${toDoList.length - activeLenght.length})`
 };
 
-const tabulationList = () => {
-  // empty
+const tabulationList = (toDoList) => {
+  switch (filterType) {
+    case "buttonAll":
+      return(toDoList);
+    case "buttonActive":
+      return(toDoList.filter((task) => task.completed == false))
+    case "buttonComplited":
+      return(toDoList.filter((task) => task.completed == true));
+  }
 };
+
+const changeButton = (event) => {
+  buttonAll.style.background = "";
+  buttonActive.style.background = "";
+  buttonComplited.style.background = "";
+
+  switch (event.target.id) {
+    case "buttonAll": 
+      filterType = event.target.id;
+      event.target.style.background = "#8f8f8f";
+      break;
+    case "buttonActive": 
+      filterType = event.target.id;
+      event.target.style.background = "#8f8f8f";
+      break;
+    case "buttonComplited": 
+      filterType = event.target.id;
+      event.target.style.background = "#8f8f8f";
+      break;
+  }
+  renderToDo();
+}
 
 const taskCompleted = (id) => {
   toDoList.forEach(task => {
@@ -46,7 +77,7 @@ const taskCompleted = (id) => {
   renderToDo();
 };
 
-const otherTask = () => {
+const otherTask = (toDoList) => {
   toDoList.forEach(task => {  
     if (task.completed != allCheckBox.checked) 
       {
@@ -94,7 +125,7 @@ const update = (event) => {
   event.target.nextElementSibling.focus();
 };
 
-const escapePress = (event, id) => {
+const escapePress = (event) => {
   event.target.setAttribute("hidden", false);
   renderToDo();
 };
@@ -128,7 +159,7 @@ const selectButton = (event) => {
     }
   if(event.target.className  == 'divButton')
     {
-      tabulationList();
+      changeButton(event);
     }
   if(event.target.className == 'span' && event.detail == 2)
     {
@@ -151,13 +182,6 @@ const keydownEvent = (event) => {
     }
 };
 
-const doublePress = (event) => {
-  if(event.target.className == 'span' && event.type == "dblclick")
-    {
-      update(event)
-    }
-};
-
 const blurEvent = (event) => {
   if(event.target.hidden == false && event.target.className == 'input')
     {
@@ -174,12 +198,10 @@ const addToDo = () => {
   toDoList.push(task);
   inputBox.value="";
   renderToDo();
-  addButton.blur();
-  inputBox.blur();
 };
 
 inputBox.addEventListener("keydown", keydownEvent);
-//divButton.addEventListener("click", selectButton); // for tabutationList
+divButton.addEventListener("click", selectButton);
 allDelete.addEventListener("click", selectButton);
 allCheckBox.addEventListener("click", selectButton);
 ulList.addEventListener("blur", blurEvent, true);
