@@ -5,10 +5,6 @@ const allCheckBox = document.querySelector("#allCheckBox");
 const allDelete = document.querySelector("#deleteAll");
 const divButton = document.querySelector("#divButton");
 
-const buttonAll = document.querySelector("#buttonAll");
-const buttonActive = document.querySelector("#buttonActive");
-const buttonComplited = document.querySelector("#buttonComplited");
-
 let toDoList = [];
 
 let filterType = "buttonAll";
@@ -17,9 +13,9 @@ const renderToDo = () => {
   let tasks='';
   tabulationList(toDoList).forEach(task => {
     tasks += `<li class="li">
-    <input type="checkbox" class="liElement" id=${task.id} ${task.completed ? 'checked' : ''}>
+    <input type="checkbox" class="liElement" id=${task.id} ${task.completed ? 'checked' : ''}></input>
     <span class="span" id=${task.id}>${task.name}</span>
-    <input value="${task.name}" class="input" id=${task.id} hidden>
+    <input value="${task.name}" class="input" id=${task.id} hidden></input>
     <button class="deleteButton" id=${task.id}>X</button>
     </li>`;
   })
@@ -29,10 +25,10 @@ const renderToDo = () => {
 };
 
 const changeButtonText = () => {
-  buttonAll.textContent = `All (${toDoList.length})`;
+  divButton.firstElementChild.textContent = `All (${toDoList.length})`;
   let activeLenght = toDoList.filter((task) => task.completed == false);
-  buttonActive.textContent = `Active (${activeLenght.length})`
-  buttonComplited.textContent = `Completed(${toDoList.length - activeLenght.length})`
+  divButton.children[1].textContent = `Active (${activeLenght.length})`
+  divButton.lastElementChild.textContent = `Completed(${toDoList.length - activeLenght.length})`
 };
 
 const tabulationList = (toDoList) => {
@@ -47,9 +43,9 @@ const tabulationList = (toDoList) => {
 };
 
 const changeButton = (event) => {
-  buttonAll.style.background = "";
-  buttonActive.style.background = "";
-  buttonComplited.style.background = "";
+  divButton.firstElementChild.style.background = "";
+  divButton.children[1].style.background = "";
+  divButton.lastElementChild.style.background = "";
 
   switch (event.target.id) {
     case "buttonAll": 
@@ -199,6 +195,8 @@ const addToDo = () => {
   inputBox.value="";
   renderToDo();
 };
+
+//типовые ошибки
 
 inputBox.addEventListener("keydown", keydownEvent);
 divButton.addEventListener("click", selectButton);
