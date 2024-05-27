@@ -1,112 +1,98 @@
-const addButton = document.querySelector("#addButton");
-const inputBox = document.querySelector("#inputBox");
-const ulList = document.querySelector("#toDoList");
-const allCheckBox = document.querySelector("#allCheckBox");
-const allDelete = document.querySelector("#deleteAll");
-const divButton = document.querySelector("#divButton");
+(() => {
+const addButton = document.querySelector('#add-button');
+const inputBox = document.querySelector('#input-box');
+const ulList = document.querySelector('#ul-list');
+const allCheckBox = document.querySelector('#all-checkbox');
+const allDelete = document.querySelector('#delete-all');
+const divButton = document.querySelector('#div-button');
 
 let toDoList = [];
 
-let filterType = "buttonAll";
+let filterType = 'button-all';
 
 const renderToDo = () => {
   let tasks='';
-  tabulationList(toDoList).forEach(task => {
-    tasks += `<li class="li">
-    <input type="checkbox" class="liElement" id=${task.id} ${task.completed ? 'checked' : ''}></input>
-    <span class="span" id=${task.id}>${task.name}</span>
-    <input value="${task.name}" class="input" id=${task.id} hidden></input>
-    <button class="deleteButton" id=${task.id}>X</button>
+  let afterTabulation = tabulationList(toDoList);
+  afterTabulation.forEach(task => {
+    tasks += `<li class="li" data-id=${task.id}>
+    <input type="checkbox" class="li-element" ${task.completed ? 'checked' : ''}></input>
+    <span class="span-task">${task.name}</span>
+    <input maxlength="255" value="${task.name}" class="input" hidden></input>
+    <button class="delete-button">X</button>
     </li>`;
-  })
+  });
   ulList.innerHTML = tasks;
-  otherTask(tabulationList(toDoList));
+  checkedCompletedAll(afterTabulation);
   changeButtonText();
 };
 
 const changeButtonText = () => {
   divButton.firstElementChild.textContent = `All (${toDoList.length})`;
-  let activeLenght = toDoList.filter((task) => task.completed == false);
-  divButton.children[1].textContent = `Active (${activeLenght.length})`
-  divButton.lastElementChild.textContent = `Completed(${toDoList.length - activeLenght.length})`
+  let activeTasksLenght = toDoList.filter((task) => !task.completed);
+  divButton.children[1].textContent = `Active (${activeTasksLenght.length})`;
+  divButton.lastElementChild.textContent = `Completed(${toDoList.length - activeTasksLenght.length})`;
 };
 
 const tabulationList = (toDoList) => {
+  divButton.firstElementChild.style.background = '';
+  divButton.children[1].style.background = '';
+  divButton.lastElementChild.style.background = '';
+
   switch (filterType) {
-    case "buttonAll":
+    case 'button-all':
+      divButton.firstElementChild.style.background = '#8f8f8f';
       return(toDoList);
-    case "buttonActive":
-      return(toDoList.filter((task) => task.completed == false))
-    case "buttonComplited":
-      return(toDoList.filter((task) => task.completed == true));
+    case 'button-active':
+      divButton.children[1].style.background = '#8f8f8f';
+      return(toDoList.filter((task) => !task.completed));
+    case 'button-complited':
+      divButton.lastElementChild.style.background = '#8f8f8f';
+      return(toDoList.filter((task) => task.completed));
   }
 };
 
-const changeButton = (event) => {
-  divButton.firstElementChild.style.background = "";
-  divButton.children[1].style.background = "";
-  divButton.lastElementChild.style.background = "";
-
-  switch (event.target.id) {
-    case "buttonAll": 
+const changeFilterType = (event) => {
+  switch (filterType = event.target.id) {
+    case 'button-all': 
       filterType = event.target.id;
-      event.target.style.background = "#8f8f8f";
       break;
-    case "buttonActive": 
+    case 'button-active': 
       filterType = event.target.id;
-      event.target.style.background = "#8f8f8f";
       break;
-    case "buttonComplited": 
+    case 'button-complited': 
       filterType = event.target.id;
-      event.target.style.background = "#8f8f8f";
       break;
   }
   renderToDo();
-}
+};
 
 const taskCompleted = (id) => {
   toDoList.forEach(task => {
-    if (task.id == id) {
-      task.completed = !task.completed
+    if (task.id === Number(id)) {
+      task.completed = !task.completed;
     }
-  })
+  });
   renderToDo();
 };
 
-const otherTask = (toDoList) => {
-  toDoList.forEach(task => {  
-    if (task.completed != allCheckBox.checked) 
-      {
-      allCheckBox.checked = false;
-      }
-    })
-  if(toDoList.every(toDoList =>{return toDoList.completed == true}))
-    {
-      allCheckBox.checked = true;
-    }
-  if(toDoList.length == 0){
+const checkedCompletedAll = (toDoList) => {
+  let allChecked = toDoList.every(toDoList => toDoList.completed);
+  allCheckBox.checked = allChecked ? true : false;
+
+  if(toDoList.length === 0){
     allCheckBox.checked = false;
   }
 };
 
-const deleteAllComplited = () => {
-  toDoList = toDoList.filter((task) => task.completed == false);
+const deleteAllCompleted = () => {
+  toDoList = toDoList.filter((task) => !task.completed);
   renderToDo();
 };
 
 const allTaskCompleted = (event) => {
-  if(event.target.checked == false)
-    {
-      toDoList.forEach(task => {
-        task.completed=false;
-      })
-    }
-  else if(event.target.checked == true)
-    {
-      toDoList.forEach(task => {
-        task.completed=true;
-      })
-    }
+  toDoList.forEach(task => {
+    task.completed = event.target.checked ? true : false;
+  });
   renderToDo();
 };
 
@@ -115,73 +101,85 @@ const taskDelete = (id) => {
   renderToDo();
 };
 
-const update = (event) => {
-  event.target.setAttribute("hidden", true);
+const updateTask = (event) => {
+  event.target.setAttribute('hidden', true);
   event.target.nextElementSibling.hidden = false;
   event.target.nextElementSibling.focus();
 };
 
-const escapePress = (event) => {
-  event.target.setAttribute("hidden", false);
+const undoChange = (event) => {
+  event.target.setAttribute('hidden', false);
   renderToDo();
 };
 
-const enterPress = (event, id) => {
+const applyChange = (event, id) => {
   toDoList.forEach(task => {
-    if (task.id == id) {
+    if (task.id === Number(id)) {
       task.name = event.target.value;
     }
-  })
-  event.target.setAttribute("hidden", false);
+  });
+  event.target.setAttribute('hidden', false);
   renderToDo();
 };
 
-const selectButton = (event) => {
-  if(event.target.className == 'liElement')
+const handlerUlClick = (event) => {
+  if(event.target.className === 'li-element')
     {
-      taskCompleted(event.target.id);
+      taskCompleted(event.target.parentElement.getAttribute('data-id'));
     }
-  if(event.target.className == 'deleteButton')
+  if(event.target.className === 'delete-button')
     {
-      taskDelete(event.target.id);
+      taskDelete(event.target.parentElement.getAttribute('data-id'));
     }
-  if(event.target.className == 'allCheckBox')
+  if(event.target.className === 'span-task' && event.detail === 2)
+    {
+      updateTask(event);
+    }
+};
+
+const handlerAllCheckboxClick = (event) => {
+  if(event.target.className === 'all-checkbox')
     {
       allTaskCompleted(event);
     }
-  if(event.target.className == 'deleteAll')
+};
+
+const handlerDeleteCompleted = (event) => {
+  if(event.target.className === 'delete-all')
     {
-      deleteAllComplited();
-    }
-  if(event.target.className  == 'divButton')
-    {
-      changeButton(event);
-    }
-  if(event.target.className == 'span' && event.detail == 2)
-    {
-      update(event);
+      deleteAllCompleted();
     }
 };
 
-const keydownEvent = (event) => {
-  if(event.key === "Escape")
+const handlerFilterType = (event) => {
+  if(event.target.className  === 'div-button')
     {
-      escapePress(event, event.target.id);
+      changeFilterType(event);
     }
-  if(event.key === "Enter" && event.target.className == 'input')
+};
+
+const handlerUlKeydown = (event) => {
+  if(event.key === 'Escape')
     {
-      enterPress(event, event.target.id);
+      undoChange(event, event.target.parentElement.getAttribute('data-id'));
     }
-  if(event.key === "Enter" && event.target.className == 'inputBox')
+  if(event.key === 'Enter' && event.target.className === 'input')
+    {
+      applyChange(event, event.target.parentElement.getAttribute('data-id'));
+    }
+};
+
+const handlerAddKeydown = (event) => {
+  if(event.key === 'Enter' && event.target.className === 'input-box')
     {
       addToDo();
     }
 };
 
-const blurEvent = (event) => {
-  if(event.target.hidden == false && event.target.className == 'input')
+const handlerUpdate = (event) => {
+  if(!event.target.hidden && event.target.className === 'input')
     {
-      enterPress(event, event.target.id)
+      applyChange(event, event.target.parentElement.getAttribute('data-id'));
     }
 };
 
@@ -189,20 +187,19 @@ const addToDo = () => {
   const task = {
     id: Date.now(),
     name: inputBox.value,
-    completed: false 
-  }
+    completed: false,
+  };
   toDoList.push(task);
-  inputBox.value="";
+  inputBox.value='';
   renderToDo();
 };
 
-//типовые ошибки
-
-inputBox.addEventListener("keydown", keydownEvent);
-divButton.addEventListener("click", selectButton);
-allDelete.addEventListener("click", selectButton);
-allCheckBox.addEventListener("click", selectButton);
-ulList.addEventListener("blur", blurEvent, true);
-ulList.addEventListener("keydown", keydownEvent);
-ulList.addEventListener("click", selectButton);
-addButton.addEventListener("click", addToDo);
+inputBox.addEventListener('keydown', handlerAddKeydown);
+divButton.addEventListener('click', handlerFilterType);
+allDelete.addEventListener('click', handlerDeleteCompleted); 
+allCheckBox.addEventListener('click', handlerAllCheckboxClick);
+ulList.addEventListener('blur', handlerUpdate, true);
+ulList.addEventListener('keydown', handlerUlKeydown);
+ulList.addEventListener('click', handlerUlClick);
+addButton.addEventListener('click', addToDo);
+})();

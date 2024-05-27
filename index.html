@@ -3,35 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./style.css"></link>
   <title>ToDo</title>
 </head>
 <body>
   <div>
     <h1>ToDo</h1>
 
-    <div class="addBlock">
-      <input id="inputBox" class="inputBox"> 
-      <button id="addButton" class="addButton">Add ToDo</button>
+    <div class="add-block">
+      <input id="input-box" class="input-box" maxlength="255"></input>
+      <button id="add-button" class="add-button">Add ToDo</button>
     </div>
-
+    
     <div class="check">
-      <input type="checkbox" id="allCheckBox" class="allCheckBox">
-      <span>Check all</span>
+      <input type="checkbox" id="all-checkbox" class="all-checkbox"></input>
+      <span class="checkbox">Check all</span>
     </div>
-
-    <ul id="toDoList"></ul>
- 
-    <div id="divButton" class="divButton">
-      <button id="buttonAll" class="divButton">All</butoon>
-      <button id="buttonActive" class="divButton">Active</butoon>
-      <button id="buttonComplited" class="divButton">Completed</butoon>    
+    
+    <ul id="ul-list"></ul>
+    
+    <div id="div-button" class="div-button">
+      <button id="button-all" class="div-button">All</butoon>
+      <button id="button-active" class="div-button">Active</butoon>
+      <button id="button-complited" class="div-button">Completed</butoon>    
     </div>
-
+    
     <div class="delete">
-      <button id="deleteAll" class="deleteAll">Delete All Complited</button>
+      <button id="delete-all" class="delete-all">Delete All Complited</button>
     </div>
-    <script src="/index.js"></script>
+    
+    <script src="./index.js"></script>
 </div>
 </body>
 </html>

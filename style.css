@@ -1,128 +1,131 @@
 *{
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 h1{
-    text-align: center;
+  text-align: center;
 }
 
 body {
-    background-color: blanchedalmond;
+  background-color: blanchedalmond;
 }
 
-.addBlock{
-    display: flex;
-    justify-content: center;
-    margin-bottom: 5px;
+.add-block{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5px;
 }
 
-.addButton{
-    height: 30px;
-    width: 100px;
-    border: none;
-    box-shadow: 3px 3px green;
-    border-radius: 0px 10px 10px 0px;
-    background-color: rgb(9, 202, 9);
+.add-button{
+  height: 30px;
+  width: 100px;
+  border: none;
+  box-shadow: 3px 3px green;
+  border-radius: 0px 10px 10px 0px;
+  background-color: rgb(9, 202, 9);
 }
 
-.inputBox{
-    border-radius: 10px 0px 0px 10px;
-    border: none;
-    box-shadow: 3px 3px rgb(119, 119, 119);
+.input-box{
+  border-radius: 10px 0px 0px 10px;
+  border: none;
+  box-shadow: 3px 3px rgb(119, 119, 119);
 }
 
 ul {
-    list-style: none;
+  list-style: none;
 }
 
 li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    padding-left: 30px;
-    padding-right: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 
-span{
-    font-size: 18px;
+.span-task{
+  text-align: center;
+  font-size: 18px;
+  width: 400px;
+  word-wrap: break-word;
 }
 
-.deleteButton{
-    padding: 10px;
-    background-color: crimson;
-    color: white;
-    border: none;
-    border-radius: 15%;
-    box-shadow: 2px 2px rgb(94, 2, 2);
+.delete-button{
+  padding: 10px;
+  background-color: crimson;
+  color: white;
+  border: none;
+  border-radius: 15%;
+  box-shadow: 2px 2px rgb(94, 2, 2);
 }
 
 .check{
-    display: flex;
-    margin-bottom: 10px;
-    justify-content: center;
+  display: flex;
+  margin-bottom: 10px;
+  justify-content: center;
 }
 
-.divButton{
-    display: flex;
-    justify-content: center;
-    height: 30px;
-    margin-bottom: 5px;
+.div-button{
+  display: flex;
+  justify-content: center;
+  height: 30px;
+  margin-bottom: 5px;
 }
 
 .delete{
-    display: flex;
-    justify-content: center;
-    height: 25px;
+  display: flex;
+  justify-content: center;
+  height: 25px;
 }
 
-.deleteAll{
-    border-radius: 5px;
-    padding: 3px;
-    border: none;
-    background-color: rgb(255, 93, 65);
-    box-shadow: 3px 3px rgb(255, 72, 0);
+.delete-all{
+  border-radius: 5px;
+  padding: 3px;
+  border: none;
+  background-color: rgb(255, 93, 65);
+  box-shadow: 3px 3px rgb(255, 72, 0);
 }
 
-#buttonAll{
-    width: 80px;
-    align-items: center;
-    border: none;
-    border-radius: 10px 0px 0px 10px;
-    box-shadow: 3px 3px rgb(119, 119, 119);
+#button-all{
+  width: 80px;
+  align-items: center;
+  border: none;
+  border-radius: 10px 0px 0px 10px;
+  box-shadow: 3px 3px rgb(119, 119, 119);
 }
 
-#buttonActive{
-    width: 80px;
-    align-items: center;
-    border-radius: 0;
-    border: none;
-    box-shadow: 3px 3px rgb(119, 119, 119);
+#button-active{
+  width: 80px;
+  align-items: center;
+  border-radius: 0;
+  border: none;
+  box-shadow: 3px 3px rgb(119, 119, 119);
 }
 
-#buttonComplited{
-    width: 80px;
-    align-items: center;
-    border: none;
-    border-radius: 0px 10px 10px 0px;
-    box-shadow: 3px 3px rgb(119, 119, 119);
+#button-complited{
+  width: 80px;
+  align-items: center;
+  border: none;
+  border-radius: 0px 10px 10px 0px;
+  box-shadow: 3px 3px rgb(119, 119, 119);
 }
 
-#buttonAll:hover{
-    background-color: #8f8f8f;
+#button-all:hover{
+  background-color: #8f8f8f;
 }
 
-#buttonActive:hover{
-    background-color: rgb(143, 143, 143);
+#button-active:hover{
+  background-color: rgb(143, 143, 143);
 }
 
-#buttonComplited:hover{
-    background-color: rgb(143, 143, 143);
+#button-complited:hover{
+  background-color: rgb(143, 143, 143);
 }
 
 input[type=checkbox]:checked + span{
-    text-decoration: line-through;
-  }
+  text-decoration: line-through;
+}
   
