@@ -37,6 +37,27 @@ ul {
   list-style: none;
 }
 
+.page-buttons{
+  display: flex;
+  justify-content: center;
+}
+
+.page-button{
+  padding: 5px;
+  margin: 3px;
+  border: none;
+  width: 25px;
+  height: 25px;
+  color: white;
+  background-color: steelblue;
+  border-radius: 3px;
+}
+
+.page-button:hover{
+  color: steelblue;
+  background-color: white;
+}
+
 li {
   display: flex;
   align-items: center;
