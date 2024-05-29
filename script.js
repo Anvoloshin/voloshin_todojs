@@ -11,7 +11,7 @@ const ENTER = 'Enter';
 const ESCAPE = 'Escape';
 const TASKSPERPAGE = 5;
 
-let currentPage = 1;
+let currentPage = 0;
 let numberOfPages = 1;
 
 let toDoList = [];
@@ -26,33 +26,36 @@ const renderToDo = () => {
     tasks += `<li class="li" data-id=${task.id}>
     <input type="checkbox" class="li-element" ${task.completed ? 'checked' : ''}></input>
     <span class="span-task">${task.name}</span>
-    <input maxlength="254" value="${task.name}" class="input" hidden></input>
+    <input maxlength="255" value="${task.name}" class="input" hidden></input>
     <button class="delete-button">X</button>
     </li>`;
   });
   ulList.innerHTML = tasks;
+  renderPageButton();
   checkedCompletedAll(afterPagination);
   changeButtonText();
 };
 
-//let count1 = 0; //
-
-const pagination = (afterTabulation) => {
-  numberOfPages = Math.ceil(afterTabulation.length/TASKSPERPAGE);
-  // let count2 = count1; //старая
-  // count1 = toDoList.length; // новая
-  // if (count1 > count2){ 
-  currentPage = numberOfPages;
-  //   filterType = 'button-all';
-  //   tabulationList();
-  // }
-  let startIndex = TASKSPERPAGE * (currentPage - 1);
-  let finishIndex = TASKSPERPAGE + startIndex;
+const renderPageButton = () => {  
   let pageCount = '';
   for (let i = 1; i <= numberOfPages; i++){
   pageCount += `<button class="page-button" data-id="${i}">${i}</button>`;
   }
   pageButtons.innerHTML = pageCount;
+};
+
+const pagination = (afterTabulation) => {
+  numberOfPages = Math.ceil(afterTabulation.length/TASKSPERPAGE);
+
+  //currentPage = numberOfPages;
+  
+  let startIndex = TASKSPERPAGE * (currentPage - 1);
+  let finishIndex = TASKSPERPAGE + startIndex;
+
+  if (numberOfPages == currentPage){
+    currentPage = numberOfPages;
+  }
+  
   return (afterTabulation.slice(startIndex, finishIndex));
 };
 
@@ -210,6 +213,8 @@ const addToDo = () => {
   };
   toDoList.push(task);
   inputBox.value='';
+
+  currentPage = numberOfPages;
   renderToDo();
 };
 
@@ -223,3 +228,12 @@ ulList.addEventListener('keydown', handlerUlKeydown);
 ulList.addEventListener('click', handlerUlClick);
 addButton.addEventListener('click', addToDo);
 })();
+
+  // let count1 = 0;
+  // let count2 = count1; //старая
+  // count1 = toDoList.length; // новая
+  // if (count1 > count2){ 
+  // currentPage = numberOfPages;
+  // filterType = 'button-all';
+  // tabulationList();
+  // }
