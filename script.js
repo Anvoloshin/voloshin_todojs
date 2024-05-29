@@ -1,90 +1,96 @@
 (() => {
-const addButton = document.querySelector('#add-button');
-const inputBox = document.querySelector('#input-box');
-const ulList = document.querySelector('#ul-list');
-const allCheckBox = document.querySelector('#all-checkbox');
-const allDelete = document.querySelector('#delete-all');
-const divButton = document.querySelector('#div-button');
-const pageButtons = document.querySelector('#page-buttons');
+const addButton = document.querySelector('#add-task-button');
+const inputBox = document.querySelector('#add-task-inputbox');
+const allCheckBox = document.querySelector('#check-all-checkbox');
+const ulToDo = document.querySelector('#ul');
+const allDelete = document.querySelector('#delete-all-button');
+const filterBlock = document.querySelector('#filter-block');
+const pageNavigation = document.querySelector('#page-nav-block');
 
 const ENTER = 'Enter';
 const ESCAPE = 'Escape';
 const TASKSPERPAGE = 5;
 
-let currentPage = 0;
-let numberOfPages = 1;
-
+let currentPage = 1;
 let toDoList = [];
-
 let filterType = 'button-all';
 
 const renderToDo = () => {
   let tasks='';
-  let afterTabulation = tabulationList(toDoList);
-  let afterPagination = pagination(afterTabulation);
-  afterPagination.forEach(task => {
+  const filteredToDo = tabulation(toDoList);
+  const slicedTodo = pagination(filteredToDo);
+  slicedTodo.forEach(task => {
     tasks += `<li class="li" data-id=${task.id}>
     <input type="checkbox" class="li-element" ${task.completed ? 'checked' : ''}></input>
     <span class="span-task">${task.name}</span>
-    <input maxlength="255" value="${task.name}" class="input" hidden></input>
-    <button class="delete-button">X</button>
+    <input maxlength="255" value="${task.name}" class="input-update" hidden></input>
+    <button class="delete-task-button">X</button>
     </li>`;
   });
-  ulList.innerHTML = tasks;
-  renderPageButton();
-  checkedCompletedAll(afterPagination);
+  ulToDo.innerHTML = tasks;
+  renderPageButton(slicedTodo);
+  checkedCompletedAll(toDoList);
   changeButtonText();
+
+  if(slicedTodo.length == 0 && currentPage > 0){
+    currentPage = currentPage - 1;
+    renderToDo();
+  }
 };
 
-const renderPageButton = () => {  
+const renderPageButton = (slicedTodo) => {  
   let pageCount = '';
-  for (let i = 1; i <= numberOfPages; i++){
+  for (let i = 1; i <= pageCounter(toDoList); i++){
   pageCount += `<button class="page-button" data-id="${i}">${i}</button>`;
   }
-  pageButtons.innerHTML = pageCount;
+  pageNavigation.innerHTML = pageCount;
+
+  if (slicedTodo.length > 0){
+    pageNavigation.children[currentPage-1].style.background = '#8f8f8f';
+    pageNavigation.children[currentPage-1].style.color = 'white';
+  };
 };
 
-const pagination = (afterTabulation) => {
-  numberOfPages = Math.ceil(afterTabulation.length/TASKSPERPAGE);
+const pageCounter = (toDoList) => {
+  let numberOfPages = 0;
+  numberOfPages = Math.ceil(tabulation(toDoList).length/TASKSPERPAGE);
+  return (numberOfPages);
+};
 
-  //currentPage = numberOfPages;
-  
+const pagination = (filteredToDo) => {
+  pageCounter(toDoList);
   let startIndex = TASKSPERPAGE * (currentPage - 1);
   let finishIndex = TASKSPERPAGE + startIndex;
-
-  if (numberOfPages == currentPage){
-    currentPage = numberOfPages;
-  }
-  
-  return (afterTabulation.slice(startIndex, finishIndex));
+  return (filteredToDo.slice(startIndex, finishIndex));
 };
 
 const changeButtonText = () => {
-  divButton.firstElementChild.textContent = `All (${toDoList.length})`;
+  filterBlock.firstElementChild.textContent = `All (${toDoList.length})`;
   let activeTasksLenght = toDoList.filter((task) => !task.completed);
-  divButton.children[1].textContent = `Active (${activeTasksLenght.length})`;
-  divButton.lastElementChild.textContent = `Completed(${toDoList.length - activeTasksLenght.length})`;
+  filterBlock.children[1].textContent = `Active (${activeTasksLenght.length})`;
+  filterBlock.lastElementChild.textContent = `Completed (${toDoList.length - activeTasksLenght.length})`;
 };
 
-const tabulationList = (toDoList) => {
-  divButton.firstElementChild.style.background = '';
-  divButton.children[1].style.background = '';
-  divButton.lastElementChild.style.background = '';
+const tabulation = (toDoList) => {
+  filterBlock.firstElementChild.style.background = '';
+  filterBlock.children[1].style.background = '';
+  filterBlock.lastElementChild.style.background = '';
   switch (filterType) {
     case 'button-all':
-      divButton.firstElementChild.style.background = '#8f8f8f';
+      filterBlock.firstElementChild.style.background = '#8f8f8f';
       return(toDoList);
     case 'button-active':
-      divButton.children[1].style.background = '#8f8f8f';
+      filterBlock.children[1].style.background = '#8f8f8f';
       return(toDoList.filter((task) => !task.completed));
     case 'button-complited':
-      divButton.lastElementChild.style.background = '#8f8f8f';
+      filterBlock.lastElementChild.style.background = '#8f8f8f';
       return(toDoList.filter((task) => task.completed));
   }
 };
 
 const changeFilterType = (event) => {
   filterType = event.target.id;
+  currentPage = pageCounter(toDoList);
   renderToDo();
 };
 
@@ -148,7 +154,7 @@ const changeSelectPage = (event) => {
   renderToDo();
 };
 
-const selectPage = (event) => {
+const handlerPageSelect = (event) => {
   if (event.target.className === 'page-button'){
     changeSelectPage(event);
   }
@@ -158,7 +164,7 @@ const handlerUlClick = (event) => {
   if (event.target.className === 'li-element'){
       taskCompleted(event.target.parentElement.getAttribute('data-id'));
     }
-  if (event.target.className === 'delete-button'){
+  if (event.target.className === 'delete-task-button'){
       taskDelete(event.target.parentElement.getAttribute('data-id'));
     }
   if (event.target.className === 'span-task' && event.detail === 2){
@@ -167,19 +173,19 @@ const handlerUlClick = (event) => {
 };
 
 const handlerAllCheckboxClick = (event) => {
-  if (event.target.className === 'all-checkbox'){
+  if (event.target.className === 'check-all-checkbox'){
       allTaskCompleted(event);
     }
 };
 
 const handlerDeleteCompleted = (event) => {
-  if (event.target.className === 'delete-all'){
+  if (event.target.className === 'delete-all-button'){
       deleteAllCompleted();
     }
 };
 
 const handlerFilterType = (event) => {
-  if (event.target.className  === 'div-button'){
+  if (event.target.className  === 'filter-button'){
       changeFilterType(event);
     }
 };
@@ -188,19 +194,19 @@ const handlerUlKeydown = (event) => {
   if (event.key === ESCAPE){
       undoChange(event, event.target.parentElement.getAttribute('data-id'));
     }
-  if (event.key === ENTER && event.target.className === 'input'){
+  if (event.key === ENTER && event.target.className === 'input-update'){
       applyChange(event, event.target.parentElement.getAttribute('data-id'));
     }
 };
 
 const handlerAddKeydown = (event) => {
-  if (event.key === ENTER && event.target.className === 'input-box'){
+  if (event.key === ENTER && event.target.className === 'add-task-inputbox'){
       addToDo();
     }
 };
 
 const handlerUpdate = (event) => {
-  if (!event.target.hidden && event.target.className === 'input'){
+  if (!event.target.hidden && event.target.className === 'input-update'){
       applyChange(event, event.target.parentElement.getAttribute('data-id'));
     }
 };
@@ -214,26 +220,18 @@ const addToDo = () => {
   toDoList.push(task);
   inputBox.value='';
 
-  currentPage = numberOfPages;
+  filterType = 'button-all';
+  currentPage = pageCounter(toDoList);
   renderToDo();
 };
 
-pageButtons.addEventListener('click', selectPage);
+pageNavigation.addEventListener('click', handlerPageSelect);
 inputBox.addEventListener('keydown', handlerAddKeydown);
-divButton.addEventListener('click', handlerFilterType);
+filterBlock.addEventListener('click', handlerFilterType);
 allDelete.addEventListener('click', handlerDeleteCompleted); 
 allCheckBox.addEventListener('click', handlerAllCheckboxClick);
-ulList.addEventListener('blur', handlerUpdate, true);
-ulList.addEventListener('keydown', handlerUlKeydown);
-ulList.addEventListener('click', handlerUlClick);
+ulToDo.addEventListener('blur', handlerUpdate, true);
+ulToDo.addEventListener('keydown', handlerUlKeydown);
+ulToDo.addEventListener('click', handlerUlClick);
 addButton.addEventListener('click', addToDo);
 })();
-
-  // let count1 = 0;
-  // let count2 = count1; //старая
-  // count1 = toDoList.length; // новая
-  // if (count1 > count2){ 
-  // currentPage = numberOfPages;
-  // filterType = 'button-all';
-  // tabulationList();
-  // }

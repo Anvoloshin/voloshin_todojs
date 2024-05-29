@@ -1,37 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./style.css"></link>
-  <title>ToDo</title>
-</head>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css"></link>
+    <title>ToDo</title>
+  </head>
   <body>
     <div>
       <h1>ToDo</h1>
+      <div class="add-task-block">
+        <input id="add-task-inputbox" class="add-task-inputbox" maxlength="255"></input>
+        <button id="add-task-button" class="add-task-button">Add ToDo</button>
+      </div>
+      <div class="check-all-block">
+        <input type="checkbox" id="check-all-checkbox" class="check-all-checkbox"></input>
+        <span>Check all</span>
+      </div>
+      <ul id="ul"></ul>
+      <div id="page-nav-block" class="page-nav-block"></div>
 
-      <div class="add-block">
-        <input id="input-box" class="input-box" maxlength="255"></input>
-        <button id="add-button" class="add-button">Add ToDo</button>
+      <div id="filter-block" class="filter-block">
+        <button id="button-all" class="filter-button">All</butoon>
+        <button id="button-active" class="filter-button">Active</butoon>
+        <button id="button-complited" class="filter-button">Completed</butoon>    
       </div>
       
-      <div class="check">
-        <input type="checkbox" id="all-checkbox" class="all-checkbox"></input>
-        <span class="checkbox">Check all</span>
-      </div>
-      
-      <ul id="ul-list"></ul>
-      
-      <div id="page-buttons" class="page-buttons"></div>
-
-      <div id="div-button" class="div-button">
-        <button id="button-all" class="div-button">All</butoon>
-        <button id="button-active" class="div-button">Active</butoon>
-        <button id="button-complited" class="div-button">Completed</butoon>    
-      </div>
-      
-      <div class="delete">
-        <button id="delete-all" class="delete-all">Delete All Complited</button>
+      <div class="delete-block">
+        <button id="delete-all-button" class="delete-all-button">Delete All Complited</button>
       </div>
       
       <script src="./script.js"></script>
