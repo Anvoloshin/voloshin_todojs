@@ -9,7 +9,16 @@ const pageNavigation = document.querySelector('#page-nav-block');
 
 const ENTER = 'Enter';
 const ESCAPE = 'Escape';
-const TASKSPERPAGE = 5;
+const TASKS_PER_PAGE = 5;
+
+const SPECIAL_CHARACTERS = {
+  '?' : '\u003F',
+  '"' : '\u0022',
+  '№' : '\u2116',
+  '%' : '\u0025',
+  ':' : '\u003A',
+  '*' : '\u002A',
+};
 
 let currentPage = 1;
 let toDoList = [];
@@ -17,14 +26,14 @@ let filterType = 'button-all';
 
 const renderToDo = () => {
   let tasks='';
-  const filteredToDo = tabulation(toDoList);
-  const slicedTodo = pagination(filteredToDo);
+  const filteredToDo = implementTabulation(toDoList);
+  const slicedTodo = implementPagination(filteredToDo);
   slicedTodo.forEach(task => {
     tasks += `<li class="li" data-id=${task.id}>
-    <input type="checkbox" class="li-element" ${task.completed ? 'checked' : ''}></input>
-    <span class="span-task">${task.name}</span>
-    <input maxlength="255" value="${task.name}" class="input-update" hidden></input>
-    <button class="delete-task-button">X</button>
+      <input type="checkbox" class="li-element" ${task.completed ? 'checked' : ''}></input>
+      <span class="span-task">${task.name}</span>
+      <input value="${task.name}" class="input-update" maxlength="255" hidden></input>
+      <button class="delete-task-button">X</button>
     </li>`;
   });
   ulToDo.innerHTML = tasks;
@@ -32,7 +41,7 @@ const renderToDo = () => {
   checkedCompletedAll(toDoList);
   changeButtonText();
 
-  if(slicedTodo.length == 0 && currentPage > 0){
+  if(slicedTodo.length === 0 && currentPage > 0){
     currentPage = currentPage - 1;
     renderToDo();
   }
@@ -46,21 +55,16 @@ const renderPageButton = (slicedTodo) => {
   pageNavigation.innerHTML = pageCount;
 
   if (slicedTodo.length > 0){
-    pageNavigation.children[currentPage-1].style.background = '#8f8f8f';
-    pageNavigation.children[currentPage-1].style.color = 'white';
+    pageNavigation.children[currentPage-1].className = 'page-button-active';
   };
 };
 
-const pageCounter = (toDoList) => {
-  let numberOfPages = 0;
-  numberOfPages = Math.ceil(tabulation(toDoList).length/TASKSPERPAGE);
-  return (numberOfPages);
-};
+const pageCounter = (toDoList) => Math.ceil(implementTabulation(toDoList).length/TASKS_PER_PAGE);
 
-const pagination = (filteredToDo) => {
+const implementPagination = (filteredToDo) => {
   pageCounter(toDoList);
-  let startIndex = TASKSPERPAGE * (currentPage - 1);
-  let finishIndex = TASKSPERPAGE + startIndex;
+  let startIndex = TASKS_PER_PAGE * (currentPage - 1);
+  let finishIndex = TASKS_PER_PAGE + startIndex;
   return (filteredToDo.slice(startIndex, finishIndex));
 };
 
@@ -71,19 +75,26 @@ const changeButtonText = () => {
   filterBlock.lastElementChild.textContent = `Completed (${toDoList.length - activeTasksLenght.length})`;
 };
 
-const tabulation = (toDoList) => {
-  filterBlock.firstElementChild.style.background = '';
-  filterBlock.children[1].style.background = '';
-  filterBlock.lastElementChild.style.background = '';
+const carryOutValidation = (val) => {
+  //if (val.value.replace(/\s+/g, ' ').trim() != ''){
+  return (_.escape(val.value.replace(/\s+/g, ' ').trim()
+        .replace(/[?"№%:*]/g, (symbolFromString) => SPECIAL_CHARACTERS[symbolFromString]).trim()))
+ // }
+};
+
+const implementTabulation = (toDoList) => {
+  filterBlock.firstElementChild.className = 'filter-button';
+  filterBlock.children[1].className = 'filter-button';
+  filterBlock.lastElementChild.className = 'filter-button';
   switch (filterType) {
     case 'button-all':
-      filterBlock.firstElementChild.style.background = '#8f8f8f';
+      filterBlock.firstElementChild.className = 'filter-button-active';
       return(toDoList);
     case 'button-active':
-      filterBlock.children[1].style.background = '#8f8f8f';
+      filterBlock.children[1].className = 'filter-button-active';
       return(toDoList.filter((task) => !task.completed));
     case 'button-complited':
-      filterBlock.lastElementChild.style.background = '#8f8f8f';
+      filterBlock.lastElementChild.className = 'filter-button-active';
       return(toDoList.filter((task) => task.completed));
   }
 };
@@ -142,9 +153,12 @@ const undoChange = (event) => {
 const applyChange = (event, id) => {
   toDoList.forEach(task => {
     if (task.id === Number(id)) {
-      task.name = event.target.value;
-    }
-  });
+      event.target.value = carryOutValidation(event.target)
+      if (event.target.value != ''){
+        task.name = event.target.value;
+      };
+      }
+    })
   event.target.setAttribute('hidden', false);
   renderToDo();
 };
@@ -211,15 +225,17 @@ const handlerUpdate = (event) => {
     }
 };
 
-const addToDo = () => {
-  const task = {
-    id: Date.now(),
-    name: inputBox.value,
-    completed: false,
-  };
-  toDoList.push(task);
+const addToDo = (event) => {
+  inputBox.value = carryOutValidation(inputBox)
+  if (inputBox.value != ''){
+    const task = {
+      id: Date.now(),
+      name: inputBox.value,
+      completed: false,
+    };
+    toDoList.push(task);
+  }
   inputBox.value='';
-
   filterType = 'button-all';
   currentPage = pageCounter(toDoList);
   renderToDo();
@@ -235,3 +251,6 @@ ulToDo.addEventListener('keydown', handlerUlKeydown);
 ulToDo.addEventListener('click', handlerUlClick);
 addButton.addEventListener('click', addToDo);
 })();
+
+// background переделать в класс
+// escape в функцию валидации

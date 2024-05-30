@@ -54,6 +54,18 @@ ul {
   box-shadow: 3px 3px rgb(119, 119, 119);
 }
 
+.page-button-active{
+  padding: 5px;
+  margin: 5px;
+  border: none;
+  width: 35px;
+  height: 35px;
+  color: white;
+  background: #8f8f8f;
+  border-radius: 3px;
+  box-shadow: 3px 3px rgb(119, 119, 119);
+}
+
 .page-button:hover{
   background-color: rgb(199, 199, 199);
 }
@@ -94,6 +106,14 @@ li {
   justify-content: center;
   height: 30px;
   margin-bottom: 5px;
+}
+
+.filter-button{
+  background-color: none;
+}
+
+.filter-button-active{
+  background-color: #8f8f8f;
 }
 
 .delete-block{
