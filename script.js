@@ -76,25 +76,23 @@ const changeButtonText = () => {
 };
 
 const carryOutValidation = (val) => {
-  //if (val.value.replace(/\s+/g, ' ').trim() != ''){
-  return (_.escape(val.value.replace(/\s+/g, ' ').trim()
-        .replace(/[?"№%:*]/g, (symbolFromString) => SPECIAL_CHARACTERS[symbolFromString]).trim()))
- // }
+  return (_.escape(val.value.replace(/\s+/g, ' ')
+    .replace(/[?"№%:*]/g, (symbolFromString) => SPECIAL_CHARACTERS[symbolFromString]).trim()))
 };
 
 const implementTabulation = (toDoList) => {
-  filterBlock.firstElementChild.className = 'filter-button';
-  filterBlock.children[1].className = 'filter-button';
-  filterBlock.lastElementChild.className = 'filter-button';
+  for (let i = 0; i <= 2; i++){
+     filterBlock.children[i].classList.remove('filter-button-active')
+  }
   switch (filterType) {
     case 'button-all':
-      filterBlock.firstElementChild.className = 'filter-button-active';
+      filterBlock.firstElementChild.classList.add('filter-button-active');
       return(toDoList);
     case 'button-active':
-      filterBlock.children[1].className = 'filter-button-active';
+      filterBlock.children[1].classList.add('filter-button-active');
       return(toDoList.filter((task) => !task.completed));
     case 'button-complited':
-      filterBlock.lastElementChild.className = 'filter-button-active';
+      filterBlock.lastElementChild.classList.add('filter-button-active');
       return(toDoList.filter((task) => task.completed));
   }
 };
@@ -131,6 +129,9 @@ const allTaskCompleted = (event) => {
   toDoList.forEach(task => {
     task.completed = event.target.checked;
   });
+  if (filterType != 'button-all'){
+    currentPage = pageCounter(toDoList);
+  }
   renderToDo();
 };
 
@@ -234,9 +235,9 @@ const addToDo = (event) => {
       completed: false,
     };
     toDoList.push(task);
+    filterType = 'button-all';
   }
   inputBox.value='';
-  filterType = 'button-all';
   currentPage = pageCounter(toDoList);
   renderToDo();
 };
@@ -251,6 +252,3 @@ ulToDo.addEventListener('keydown', handlerUlKeydown);
 ulToDo.addEventListener('click', handlerUlClick);
 addButton.addEventListener('click', addToDo);
 })();
-
-// background переделать в класс
-// escape в функцию валидации
