@@ -234,6 +234,15 @@ const addToDo = (event) => {
       name: inputBox.value,
       completed: false,
     };
+
+
+    fetch('http://localhost:3000/tasks', {
+      method: "post",
+      headers: { 'Content-Type': 'application/json'},
+      body: JSON.stringify({name: task.name})
+    }).then(response => response.json())
+
+    
     toDoList.push(task);
     filterType = 'button-all';
   }
