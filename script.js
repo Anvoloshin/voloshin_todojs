@@ -229,7 +229,7 @@ const handlerUpdate = (event) => {
 const addToDo = (event) => {
   inputBox.value = carryOutValidation(inputBox)
   if (inputBox.value != ''){
-    const task = {
+      const task = {
       id: Date.now(),
       name: inputBox.value,
       completed: false,
@@ -237,12 +237,17 @@ const addToDo = (event) => {
 
 
     fetch('http://localhost:3000/tasks', {
-      method: "post",
+      method: "POST",
       headers: { 'Content-Type': 'application/json'},
-      body: JSON.stringify({name: task.name})
-    }).then(response => response.json())
+      body: JSON.stringify({name: inputBox.value})
+    })
+    .then(response => {
+      if(response.ok) {response => response.json()}
+    })
+    .then(console.log('All good, do anywhere'))
+    .catch(error => console.log(error))
 
-    
+
     toDoList.push(task);
     filterType = 'button-all';
   }
