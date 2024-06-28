@@ -24,6 +24,27 @@ let currentPage = 1;
 let toDoList = [];
 let filterType = 'button-all';
 
+//@get передалать запрос получения
+const getTasks = () => {
+  return fetch('http://localhost:3000/tasks')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Fetch error');
+      }
+      return response.json();
+    })
+    .then(data => {
+      toDoList = data;
+      renderToDo();
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
+};
+window.onload = () => {
+  getTasks();
+};
+
 const renderToDo = () => {
   let tasks='';
   const filteredToDo = implementTabulation(toDoList);
@@ -103,6 +124,7 @@ const changeFilterType = (event) => {
   renderToDo();
 };
 
+//@Patch task by "id"
 const taskCompleted = (id) => {
   toDoList.forEach(task => {
     if (task.id === Number(id)) {
@@ -120,11 +142,13 @@ const checkedCompletedAll = (toDoList) => {
   }
 };
 
+//@Delete all complited tasks "/clear"
 const deleteAllCompleted = () => {
   toDoList = toDoList.filter((task) => !task.completed);
   renderToDo();
 };
 
+//@Patch all tasks
 const allTaskCompleted = (event) => {
   toDoList.forEach(task => {
     task.completed = event.target.checked;
@@ -135,6 +159,7 @@ const allTaskCompleted = (event) => {
   renderToDo();
 };
 
+//@Delete task by "id"
 const taskDelete = (id) => {
   toDoList = toDoList.filter((task) => task.id != id);
   renderToDo();
@@ -226,31 +251,27 @@ const handlerUpdate = (event) => {
     }
 };
 
-const addToDo = (event) => {
+//@post переделать запрос на отправку
+const addToDo = async (event) => {
   inputBox.value = carryOutValidation(inputBox)
   if (inputBox.value != ''){
-      const task = {
-      id: Date.now(),
-      name: inputBox.value,
-      completed: false,
-    };
-
-
     fetch('http://localhost:3000/tasks', {
       method: "POST",
       headers: { 'Content-Type': 'application/json'},
       body: JSON.stringify({name: inputBox.value})
     })
     .then(response => {
-      if(response.ok) {response => response.json()}
+      if (!response.ok) {
+        throw new Error('Fetch error');
+      }
+      return response.json();
     })
-    .then(console.log('All good, do anywhere'))
-    .catch(error => console.log(error))
-
-
-    toDoList.push(task);
-    filterType = 'button-all';
-  }
+    .then(data => {
+      abc = data;
+      console.log(abc)
+    })
+  };
+  filterType = 'button-all';
   inputBox.value='';
   currentPage = pageCounter(toDoList);
   renderToDo();
