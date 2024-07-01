@@ -20,27 +20,27 @@ const SPECIAL_CHARACTERS = {
   '*' : '\u002A',
 };
 
+URL = 'http://localhost:3000/tasks'
+
 let currentPage = 1;
 let toDoList = [];
 let filterType = 'button-all';
 
-//@get передалать запрос получения
 const getTasks = () => {
-  return fetch('http://localhost:3000/tasks')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Fetch error');
-      }
-      return response.json();
-    })
-    .then(data => {
-      toDoList = data;
-      renderToDo();
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-    });
+  fetch(URL)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Fetch error');
+    }
+    return response.json();
+  })
+  .then(taskData => {
+    toDoList = taskData;
+    renderToDo();
+  })
+  .catch(error => {console.log(error)})    
 };
+
 window.onload = () => {
   getTasks();
 };
@@ -251,11 +251,10 @@ const handlerUpdate = (event) => {
     }
 };
 
-//@post переделать запрос на отправку
-const addToDo = async (event) => {
+const addToDo = () => {
   inputBox.value = carryOutValidation(inputBox)
   if (inputBox.value != ''){
-    fetch('http://localhost:3000/tasks', {
+    fetch(URL, {
       method: "POST",
       headers: { 'Content-Type': 'application/json'},
       body: JSON.stringify({name: inputBox.value})
@@ -266,15 +265,15 @@ const addToDo = async (event) => {
       }
       return response.json();
     })
-    .then(data => {
-      abc = data;
-      console.log(abc)
+    .then(taskData => {
+      toDoList.push(taskData);
+      filterType = 'button-all';
+      inputBox.value='';
+      currentPage = pageCounter(toDoList);
+      renderToDo();
     })
+    .catch(error => {console.log(error)})
   };
-  filterType = 'button-all';
-  inputBox.value='';
-  currentPage = pageCounter(toDoList);
-  renderToDo();
 };
 
 pageNavigation.addEventListener('click', handlerPageSelect);
