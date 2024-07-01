@@ -6,6 +6,7 @@ const ulToDo = document.querySelector('#ul');
 const allDelete = document.querySelector('#delete-all-button');
 const filterBlock = document.querySelector('#filter-block');
 const pageNavigation = document.querySelector('#page-nav-block');
+const errors = document.querySelector('.error-message-box');
 
 const ENTER = 'Enter';
 const ESCAPE = 'Escape';
@@ -20,7 +21,7 @@ const SPECIAL_CHARACTERS = {
   '*' : '\u002A',
 };
 
-URL = 'http://localhost:3000/tasks'
+const URL = 'http://localhost:3000/tasks/'
 
 let currentPage = 1;
 let toDoList = [];
@@ -38,12 +39,23 @@ const getTasks = () => {
     toDoList = taskData;
     renderToDo();
   })
-  .catch(error => {console.log(error)})    
+  .catch(error => {viewError(error)})    
 };
 
 window.onload = () => {
   getTasks();
 };
+
+const viewError = (error) => {
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'error-message';
+  errorDiv.textContent = error;
+  errors.appendChild(errorDiv);
+  setTimeout(() => {
+    errorDiv.remove();
+  }, 1500);
+};
+
 
 const renderToDo = () => {
   let tasks='';
@@ -124,14 +136,27 @@ const changeFilterType = (event) => {
   renderToDo();
 };
 
-//@Patch task by "id"
-const taskCompleted = (id) => {
-  toDoList.forEach(task => {
+const taskCompleted = (id, event) => {
+  fetch(`${URL}${id}`, {
+    method: "PATCH",
+    headers: { 'Content-Type': 'application/json'},
+    body: JSON.stringify({completed: event.target.checked})
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Fetch error');
+    }
+    return response.json();
+  })
+  .then(() => {   
+    toDoList.forEach(task => {
     if (task.id === Number(id)) {
       task.completed = !task.completed;
     }
-  });
+  }),
   renderToDo();
+  })
+  .catch(error => {viewError(error)})
 };
 
 const checkedCompletedAll = (toDoList) => {
@@ -142,27 +167,64 @@ const checkedCompletedAll = (toDoList) => {
   }
 };
 
-//@Delete all complited tasks "/clear"
 const deleteAllCompleted = () => {
-  toDoList = toDoList.filter((task) => !task.completed);
-  renderToDo();
+  fetch(`${URL}clear`, {
+    method: "DELETE",
+    headers: { 'Content-Type': 'application/json'},
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Fetch error');
+    }
+    return response;
+  })
+  .then(() => {
+    toDoList = toDoList.filter((task) => !task.completed);
+    renderToDo();
+  })
+  .catch(error => {viewError(error)})
 };
 
-//@Patch all tasks
 const allTaskCompleted = (event) => {
-  toDoList.forEach(task => {
-    task.completed = event.target.checked;
-  });
-  if (filterType != 'button-all'){
-    currentPage = pageCounter(toDoList);
-  }
-  renderToDo();
+  fetch(URL, {
+    method: "PATCH",
+    headers: { 'Content-Type': 'application/json'},
+    body: JSON.stringify({completed: event.target.checked})
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Fetch error');
+    }
+    return response;
+  })
+  .then(() => {
+    toDoList.forEach(task => {
+      task.completed = event.target.checked;
+    });
+    if (filterType != 'button-all'){
+      currentPage = pageCounter(toDoList);
+    }
+    renderToDo();
+  })
+  .catch(error => {viewError(error)})
 };
 
-//@Delete task by "id"
 const taskDelete = (id) => {
-  toDoList = toDoList.filter((task) => task.id != id);
-  renderToDo();
+  fetch(`${URL}${id}`, {
+    method: "DELETE",
+    headers: { 'Content-Type': 'application/json'},
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Fetch error');
+    }
+    return response;
+  })
+  .then(() => {
+    toDoList = toDoList.filter((task) => task.id != id);
+    renderToDo();
+  })
+  .catch(error => {console.log(error)})
 };
 
 const updateTask = (event) => {
@@ -177,16 +239,30 @@ const undoChange = (event) => {
 };
 
 const applyChange = (event, id) => {
-  toDoList.forEach(task => {
-    if (task.id === Number(id)) {
-      event.target.value = carryOutValidation(event.target)
-      if (event.target.value != ''){
-        task.name = event.target.value;
-      };
+  fetch(`${URL}${id}`, {
+    method: "PATCH",
+    headers: { 'Content-Type': 'application/json'},
+    body: JSON.stringify({name: event.target.value})
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Fetch error');
+    }
+    return response;
+  })
+  .then(() => {
+    toDoList.forEach(task => {
+      if (task.id === Number(id)) {
+        event.target.value = carryOutValidation(event.target)
+        if (event.target.value != ''){
+          task.name = event.target.value;
+        };
       }
     })
   event.target.setAttribute('hidden', false);
   renderToDo();
+  })
+  .catch(error => {viewError(error)})
 };
 
 const changeSelectPage = (event) => {
@@ -202,7 +278,7 @@ const handlerPageSelect = (event) => {
 
 const handlerUlClick = (event) => {
   if (event.target.className === 'li-element'){
-      taskCompleted(event.target.parentElement.getAttribute('data-id'));
+      taskCompleted(event.target.parentElement.getAttribute('data-id'), event);
     }
   if (event.target.className === 'delete-task-button'){
       taskDelete(event.target.parentElement.getAttribute('data-id'));
@@ -272,7 +348,7 @@ const addToDo = () => {
       currentPage = pageCounter(toDoList);
       renderToDo();
     })
-    .catch(error => {console.log(error)})
+    .catch(error => {viewError(error)})
   };
 };
 
