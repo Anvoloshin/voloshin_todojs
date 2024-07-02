@@ -39,7 +39,7 @@ const getTasks = () => {
     toDoList = taskData;
     renderToDo();
   })
-  .catch(error => {viewError(error)})    
+  .catch(error => viewError(error))    
 };
 
 window.onload = () => {
@@ -55,7 +55,6 @@ const viewError = (error) => {
     errorDiv.remove();
   }, 1500);
 };
-
 
 const renderToDo = () => {
   let tasks='';
@@ -156,7 +155,7 @@ const taskCompleted = (id, event) => {
   }),
   renderToDo();
   })
-  .catch(error => {viewError(error)})
+  .catch(error => viewError(error))
 };
 
 const checkedCompletedAll = (toDoList) => {
@@ -170,7 +169,6 @@ const checkedCompletedAll = (toDoList) => {
 const deleteAllCompleted = () => {
   fetch(`${URL}clear`, {
     method: "DELETE",
-    headers: { 'Content-Type': 'application/json'},
   })
   .then(response => {
     if (!response.ok) {
@@ -182,7 +180,7 @@ const deleteAllCompleted = () => {
     toDoList = toDoList.filter((task) => !task.completed);
     renderToDo();
   })
-  .catch(error => {viewError(error)})
+  .catch(error => viewError(error))
 };
 
 const allTaskCompleted = (event) => {
@@ -206,13 +204,12 @@ const allTaskCompleted = (event) => {
     }
     renderToDo();
   })
-  .catch(error => {viewError(error)})
+  .catch(error => viewError(error))
 };
 
 const taskDelete = (id) => {
   fetch(`${URL}${id}`, {
     method: "DELETE",
-    headers: { 'Content-Type': 'application/json'},
   })
   .then(response => {
     if (!response.ok) {
@@ -262,7 +259,7 @@ const applyChange = (event, id) => {
   event.target.setAttribute('hidden', false);
   renderToDo();
   })
-  .catch(error => {viewError(error)})
+  .catch(error => viewError(error))
 };
 
 const changeSelectPage = (event) => {
@@ -348,7 +345,7 @@ const addToDo = () => {
       currentPage = pageCounter(toDoList);
       renderToDo();
     })
-    .catch(error => {viewError(error)})
+    .catch(error => viewError(error))
   };
 };
 
