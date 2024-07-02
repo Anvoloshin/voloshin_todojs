@@ -62,7 +62,7 @@ const renderToDo = () => {
   const slicedTodo = implementPagination(filteredToDo);
   slicedTodo.forEach(task => {
     tasks += `<li class="li" data-id=${task.id}>
-      <input type="checkbox" class="li-element" ${task.completed ? 'checked' : ''}></input>
+      <input type="checkbox" class="li-element" ${task.isCompleted ? 'checked' : ''}></input>
       <span class="span-task">${task.name}</span>
       <input value="${task.name}" class="input-update" maxlength="255" hidden></input>
       <button class="delete-task-button">X</button>
@@ -102,7 +102,7 @@ const implementPagination = (filteredToDo) => {
 
 const changeButtonText = () => {
   filterBlock.firstElementChild.textContent = `All (${toDoList.length})`;
-  let activeTasksLenght = toDoList.filter((task) => !task.completed);
+  let activeTasksLenght = toDoList.filter((task) => !task.isCompleted);
   filterBlock.children[1].textContent = `Active (${activeTasksLenght.length})`;
   filterBlock.lastElementChild.textContent = `Completed (${toDoList.length - activeTasksLenght.length})`;
 };
@@ -122,10 +122,10 @@ const implementTabulation = (toDoList) => {
       return(toDoList);
     case 'button-active':
       filterBlock.children[1].classList.add('filter-button-active');
-      return(toDoList.filter((task) => !task.completed));
+      return(toDoList.filter((task) => !task.isCompleted));
     case 'button-complited':
       filterBlock.lastElementChild.classList.add('filter-button-active');
-      return(toDoList.filter((task) => task.completed));
+      return(toDoList.filter((task) => task.isCompleted));
   }
 };
 
@@ -135,11 +135,11 @@ const changeFilterType = (event) => {
   renderToDo();
 };
 
-const taskCompleted = (id, event) => {
+const updateTaskData = (task, id) => {
   fetch(`${URL}${id}`, {
     method: "PATCH",
     headers: { 'Content-Type': 'application/json'},
-    body: JSON.stringify({completed: event.target.checked})
+    body: JSON.stringify(task)
   })
   .then(response => {
     if (!response.ok) {
@@ -147,19 +147,35 @@ const taskCompleted = (id, event) => {
     }
     return response.json();
   })
-  .then(() => {   
-    toDoList.forEach(task => {
-    if (task.id === Number(id)) {
-      task.completed = !task.completed;
-    }
-  }),
-  renderToDo();
-  })
   .catch(error => viewError(error))
+}
+
+const taskCompleted = (id) => {
+  toDoList.forEach(task => {
+    if (task.id === Number(id)) {
+      task.isCompleted = !task.isCompleted;
+      updateTaskData(task, id);
+    }
+  });
+  renderToDo();
+};
+
+const applyChange = (event, id) => {
+  toDoList.forEach(task => {
+    if (task.id === Number(id)) {
+      event.target.value = carryOutValidation(event.target)
+      if (event.target.value !== '' && event.target.value !== task.name){
+        task.name = event.target.value;
+        updateTaskData(task, id);
+      };
+      }
+    })
+  event.target.setAttribute('hidden', false);
+  renderToDo();
 };
 
 const checkedCompletedAll = (toDoList) => {
-  let allChecked = toDoList.every(toDoList => toDoList.completed);
+  let allChecked = toDoList.every(toDoList => toDoList.isCompleted);
   allCheckBox.checked = allChecked;
   if (toDoList.length === 0){
     allCheckBox.checked = false;
@@ -167,44 +183,48 @@ const checkedCompletedAll = (toDoList) => {
 };
 
 const deleteAllCompleted = () => {
-  fetch(`${URL}clear`, {
-    method: "DELETE",
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Fetch error');
-    }
-    return response;
-  })
-  .then(() => {
-    toDoList = toDoList.filter((task) => !task.completed);
-    renderToDo();
-  })
-  .catch(error => viewError(error))
+  if(toDoList.some(toDoList => toDoList.isCompleted)){
+    fetch(`${URL}completed`, {
+      method: "DELETE",
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Fetch error');
+      }
+      return response;
+    })
+    .then(() => {
+      toDoList = toDoList.filter((task) => !task.isCompleted);
+      renderToDo();
+    })
+    .catch(error => viewError(error))
+  }
 };
 
 const allTaskCompleted = (event) => {
-  fetch(URL, {
-    method: "PATCH",
-    headers: { 'Content-Type': 'application/json'},
-    body: JSON.stringify({completed: event.target.checked})
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Fetch error');
-    }
-    return response;
-  })
-  .then(() => {
-    toDoList.forEach(task => {
-      task.completed = event.target.checked;
-    });
-    if (filterType != 'button-all'){
-      currentPage = pageCounter(toDoList);
-    }
-    renderToDo();
-  })
-  .catch(error => viewError(error))
+  if (toDoList.length !== 0){
+    fetch(URL, {
+      method: "PATCH",
+      headers: { 'Content-Type': 'application/json'},
+      body: JSON.stringify({isCompleted: event.target.checked})
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Fetch error');
+      }
+      return response;
+    })
+    .then(() => {
+      toDoList.forEach(task => {
+        task.isCompleted = event.target.checked;
+      });
+      if (filterType != 'button-all'){
+        currentPage = pageCounter(toDoList);
+      }
+      renderToDo();
+    })
+    .catch(error => viewError(error))
+  }
 };
 
 const taskDelete = (id) => {
@@ -233,33 +253,6 @@ const updateTask = (event) => {
 const undoChange = (event) => {
   event.target.setAttribute('hidden', false);
   renderToDo();
-};
-
-const applyChange = (event, id) => {
-  fetch(`${URL}${id}`, {
-    method: "PATCH",
-    headers: { 'Content-Type': 'application/json'},
-    body: JSON.stringify({name: event.target.value})
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Fetch error');
-    }
-    return response;
-  })
-  .then(() => {
-    toDoList.forEach(task => {
-      if (task.id === Number(id)) {
-        event.target.value = carryOutValidation(event.target)
-        if (event.target.value != ''){
-          task.name = event.target.value;
-        };
-      }
-    })
-  event.target.setAttribute('hidden', false);
-  renderToDo();
-  })
-  .catch(error => viewError(error))
 };
 
 const changeSelectPage = (event) => {
