@@ -19,6 +19,8 @@ const SPECIAL_CHARACTERS = {
   '%' : '\u0025',
   ':' : '\u003A',
   '*' : '\u002A',
+  '&lt;' : '˂',
+  '&gt;' : '˃'
 };
 
 const URL = 'http://localhost:3000/tasks/'
@@ -110,6 +112,7 @@ const changeButtonText = () => {
 const carryOutValidation = (val) => {
   return (_.escape(val.value.replace(/\s+/g, ' ')
     .replace(/[?"№%:*]/g, (symbolFromString) => SPECIAL_CHARACTERS[symbolFromString]).trim()))
+    .replace(/&lt;|&gt;/g, (symbolFromString) => SPECIAL_CHARACTERS[symbolFromString])
 };
 
 const implementTabulation = (toDoList) => {
@@ -319,11 +322,12 @@ const handlerUpdate = (event) => {
 
 const addToDo = () => {
   inputBox.value = carryOutValidation(inputBox)
+  console.log(carryOutValidation(inputBox))
   if (inputBox.value != ''){
     fetch(URL, {
       method: "POST",
       headers: { 'Content-Type': 'application/json'},
-      body: JSON.stringify({name: inputBox.value})
+      body: JSON.stringify({name: carryOutValidation(inputBox)})
     })
     .then(response => {
       if (!response.ok) {
